@@ -69,7 +69,7 @@ for cask in "${CASKS[@]}"; do
     echo "  ✅ $cask already installed, skipping."
   else
     echo "  ⬇️  Installing missing app: $cask..."
-    brew install --cask "$cask"
+    brew install --cask --force "$cask"
   fi
 done
 
