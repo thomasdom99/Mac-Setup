@@ -13,7 +13,6 @@ echo "🧹 Cleaning up apps that need to be managed by Homebrew..."
 APPS_TO_CLEAN=(
   "/Applications/BBEdit.app"
   "/Applications/Bitwarden.app"
-  "/Applications/AltTab.app"
 )
 
 for app in "${APPS_TO_CLEAN[@]}"; do
@@ -94,7 +93,7 @@ brew upgrade
 
 echo ""
 echo "⬆️  Upgrading casks..."
-brew upgrade --cask --greedy
+brew upgrade --cask --greedy $(brew list --cask | grep -v "^alt-tab$" | tr '\n' ' ')
 
 echo ""
 echo "🧹 Cleaning up old versions..."
