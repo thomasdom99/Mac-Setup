@@ -7,7 +7,7 @@
 #   Also installs any missing apps.
 # ===========================================
 
-set -e
+FAILED_INSTALLS=()
 
 echo "🍺 Updating Homebrew..."
 brew update
@@ -24,7 +24,10 @@ for formula in "${FORMULAE[@]}"; do
     echo "  ✅ $formula already installed, skipping."
   else
     echo "  ⬇️  Installing missing formula: $formula..."
-    brew install "$formula"
+    if ! brew install "$formula"; then
+      echo "  ⚠️  Failed to install $formula, skipping..."
+      FAILED_INSTALLS+=("$formula")
+    fi
   fi
 done
 
@@ -68,7 +71,10 @@ for cask in "${CASKS[@]}"; do
     echo "  ✅ $cask already installed, skipping."
   else
     echo "  ⬇️  Installing missing app: $cask..."
-    brew install --cask --force "$cask"
+    if ! brew install --cask --force "$cask"; then
+      echo "  ⚠️  Failed to install $cask, skipping..."
+      FAILED_INSTALLS+=("$cask")
+    fi
   fi
 done
 
@@ -85,4 +91,11 @@ echo "🧹 Cleaning up old versions..."
 brew cleanup
 
 echo ""
-echo "✅ Everything is up to date and nothing is missing!"
+if [ ${#FAILED_INSTALLS[@]} -eq 0 ]; then
+  echo "✅ Everything is up to date and nothing is missing!"
+else
+  echo "✅ Done! However the following apps failed to install and may need to be installed manually:"
+  for fail in "${FAILED_INSTALLS[@]}"; do
+    echo "   ❌ $fail"
+  done
+fi
