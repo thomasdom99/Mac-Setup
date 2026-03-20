@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # ===========================================
-#   Mac Bootstrap Script
+#   Mac Fresh Install Script
 #   Run this after a fresh format to install
 #   all your essential apps via Homebrew.
 # ===========================================
 
-set -e
+FAILED_INSTALLS=()
 
 echo "🍺 Checking for Homebrew..."
 if ! command -v brew &>/dev/null; then
@@ -29,7 +29,10 @@ for formula in "${FORMULAE[@]}"; do
     echo "  ✅ $formula already installed, skipping."
   else
     echo "  ⬇️  Installing $formula..."
-    brew install "$formula"
+    if ! brew install "$formula"; then
+      echo "  ⚠️  Failed to install $formula, skipping..."
+      FAILED_INSTALLS+=("$formula")
+    fi
   fi
 done
 
@@ -73,7 +76,10 @@ for cask in "${CASKS[@]}"; do
     echo "  ✅ $cask already installed, skipping."
   else
     echo "  ⬇️  Installing $cask..."
-    brew install --cask "$cask"
+    if ! brew install --cask "$cask"; then
+      echo "  ⚠️  Failed to install $cask, skipping..."
+      FAILED_INSTALLS+=("$cask")
+    fi
   fi
 done
 
@@ -82,7 +88,15 @@ echo "🧹 Cleaning up..."
 brew cleanup
 
 echo ""
-echo "✅ All done! Your Mac is set up and ready to go."
+if [ ${#FAILED_INSTALLS[@]} -eq 0 ]; then
+  echo "✅ All done! Your Mac is set up and ready to go."
+else
+  echo "✅ Done! However the following apps failed to install and may need to be installed manually:"
+  for fail in "${FAILED_INSTALLS[@]}"; do
+    echo "   ❌ $fail"
+  done
+fi
+
 echo ""
 echo "⚠️  The following apps need to be installed manually:"
 echo ""
@@ -98,18 +112,3 @@ echo "     - Xcode"
 echo ""
 echo "  🌐 Website:"
 echo "     - Cisco Packet Tracer → https://www.netacad.com"
-echo ""
-echo "⚠️  Don't forget to install these manually:"
-echo ""
-echo "   App Store:"
-echo "   - Microsoft Word"
-echo "   - Microsoft Excel"
-echo "   - Microsoft PowerPoint"
-echo "   - Microsoft Outlook"
-echo "   - Amphetamine"
-echo "   - Ente Auth"
-echo "   - Xcode"
-echo ""
-echo "   Manual download:"
-echo "   - Cisco Packet Tracer → https://netacad.com"
-echo ""
