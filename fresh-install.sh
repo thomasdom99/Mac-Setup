@@ -66,7 +66,6 @@ CASKS=(
   drawio
   filezilla
   obs
-  speedtest
   windows-app
   wireshark
   xampp
@@ -110,6 +109,8 @@ echo "     - Microsoft OneNote"
 echo "     - Amphetamine"
 echo "     - Ente Auth"
 echo "     - Xcode"
+echo "     - Speedtest by Ookla"
 echo ""
 echo "  🌐 Website:"
 echo "     - Cisco Packet Tracer → https://www.netacad.com"
+echo "     - FileZilla → https://filezilla-project.org"
