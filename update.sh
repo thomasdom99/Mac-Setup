@@ -59,9 +59,6 @@ CASKS=(
   chatgpt
   claude
   drawio
-  filezilla
-  obs
-  speedtest
   windows-app
   wireshark
   xampp
