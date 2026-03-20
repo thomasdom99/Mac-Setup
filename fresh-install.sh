@@ -20,7 +20,7 @@ fi
 echo ""
 echo "📦 Installing formulae (CLI tools)..."
 FORMULAE=(
-  python
+  python@3.14
   git
 )
 
@@ -39,7 +39,7 @@ CASKS=(
   spotify
   google-chrome
   brave-browser
-  firefox-developer-edition
+  firefox@developer-edition
   discord
   microsoft-teams
   microsoft-365
