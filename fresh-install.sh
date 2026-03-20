@@ -1,24 +1,19 @@
 #!/bin/bash
 
 # ===========================================
-#   Mac Bootstrap Script
-#   Run this after a fresh format to install
-#   all your essential apps via Homebrew.
+#   Mac Update Script
+#   Run this every now and then to keep
+#   all your apps up to date via Homebrew.
+#   Also installs any missing apps.
 # ===========================================
 
 set -e
 
-echo "🍺 Checking for Homebrew..."
-if ! command -v brew &>/dev/null; then
-  echo "Installing Homebrew..."
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-else
-  echo "✅ Homebrew already installed. Updating..."
-  brew update
-fi
+echo "🍺 Updating Homebrew..."
+brew update
 
 echo ""
-echo "📦 Installing formulae (CLI tools)..."
+echo "📦 Checking formulae (CLI tools)..."
 FORMULAE=(
   python
   git
@@ -28,13 +23,13 @@ for formula in "${FORMULAE[@]}"; do
   if brew list --formula | grep -q "^${formula}\$"; then
     echo "  ✅ $formula already installed, skipping."
   else
-    echo "  ⬇️  Installing $formula..."
+    echo "  ⬇️  Installing missing formula: $formula..."
     brew install "$formula"
   fi
 done
 
 echo ""
-echo "🖥️  Installing casks (GUI apps)..."
+echo "🖥️  Checking casks (GUI apps)..."
 CASKS=(
   spotify
   google-chrome
@@ -73,14 +68,22 @@ for cask in "${CASKS[@]}"; do
   if brew list --cask | grep -q "^${cask}\$"; then
     echo "  ✅ $cask already installed, skipping."
   else
-    echo "  ⬇️  Installing $cask..."
-    brew install --cask "$cask"
+    echo "  ⬇️  Installing missing app: $cask..."
+    brew install --cask --force "$cask"
   fi
 done
 
 echo ""
-echo "🧹 Cleaning up..."
+echo "⬆️  Upgrading formulae..."
+brew upgrade
+
+echo ""
+echo "⬆️  Upgrading casks..."
+brew upgrade --cask --greedy
+
+echo ""
+echo "🧹 Cleaning up old versions..."
 brew cleanup
 
 echo ""
-echo "✅ All done! Your Mac is set up and ready to go."
+echo "✅ Everything is up to date and nothing is missing!"
