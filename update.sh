@@ -12,7 +12,6 @@ FAILED_INSTALLS=()
 echo "🧹 Cleaning up apps that need to be managed by Homebrew..."
 APPS_TO_CLEAN=(
   "/Applications/BBEdit.app"
-  "/Applications/Bitwarden.app"
 )
 
 for app in "${APPS_TO_CLEAN[@]}"; do
