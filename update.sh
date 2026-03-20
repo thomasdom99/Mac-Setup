@@ -10,9 +10,8 @@
 FAILED_INSTALLS=()
 
 echo "🧹 Cleaning up apps that need to be managed by Homebrew..."
-APPS_TO_CLEAN=(
-  "/Applications/BBEdit.app"
-)
+APPS_TO_CLEAN=()
+
 
 for app in "${APPS_TO_CLEAN[@]}"; do
   if [ -e "$app" ]; then
