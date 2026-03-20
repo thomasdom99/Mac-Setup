@@ -69,6 +69,7 @@ CASKS=(
   speedtest
   windows-app
   wireshark
+  xampp
 )
 
 for cask in "${CASKS[@]}"; do
