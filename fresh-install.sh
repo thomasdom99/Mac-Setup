@@ -46,7 +46,6 @@ CASKS=(
   discord
   microsoft-teams
   visual-studio-code
-  adobe-acrobat-reader
   bbedit
   google-drive
   github
@@ -68,7 +67,6 @@ CASKS=(
   obs
   windows-app
   wireshark
-  xampp
 )
 
 for cask in "${CASKS[@]}"; do
@@ -114,3 +112,5 @@ echo ""
 echo "  🌐 Website:"
 echo "     - Cisco Packet Tracer → https://www.netacad.com"
 echo "     - FileZilla → https://filezilla-project.org"
+echo "     - Adobe Acrobat Reader → https://get.adobe.com/reader"
+echo "     - XAMPP → https://www.apachefriends.org"
