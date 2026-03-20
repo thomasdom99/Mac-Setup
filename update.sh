@@ -9,7 +9,22 @@
 
 FAILED_INSTALLS=()
 
-echo "🍺 Updating Homebrew..."
+echo "🧹 Cleaning up apps that need to be managed by Homebrew..."
+APPS_TO_CLEAN=(
+  "/Applications/BBEdit.app"
+  "/Applications/Adobe Acrobat Reader DC.app"
+  "/Applications/Bitwarden.app"
+  "/Applications/XAMPP"
+)
+
+for app in "${APPS_TO_CLEAN[@]}"; do
+  if [ -e "$app" ]; then
+    echo "  🗑️  Removing $app..."
+    sudo rm -rf "$app"
+  fi
+done
+
+echo ""
 brew update
 
 echo ""
