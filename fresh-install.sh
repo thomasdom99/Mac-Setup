@@ -42,7 +42,6 @@ CASKS=(
   firefox@developer-edition
   discord
   microsoft-teams
-  microsoft-365
   visual-studio-code
   adobe-acrobat-reader
   bbedit
