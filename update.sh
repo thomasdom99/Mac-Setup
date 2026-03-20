@@ -93,7 +93,7 @@ brew upgrade
 
 echo ""
 echo "⬆️  Upgrading casks..."
-brew upgrade --cask --greedy $(brew list --cask | grep -v "^alt-tab$" | tr '\n' ' ')
+brew upgrade --cask --greedy $(brew list --cask | grep -v -E "^(alt-tab|firefox@developer-edition)$" | tr '\n' ' ')
 
 echo ""
 echo "🧹 Cleaning up old versions..."
