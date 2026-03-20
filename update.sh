@@ -12,9 +12,7 @@ FAILED_INSTALLS=()
 echo "🧹 Cleaning up apps that need to be managed by Homebrew..."
 APPS_TO_CLEAN=(
   "/Applications/BBEdit.app"
-  "/Applications/Adobe Acrobat Reader DC.app"
   "/Applications/Bitwarden.app"
-  "/Applications/XAMPP"
 )
 
 for app in "${APPS_TO_CLEAN[@]}"; do
@@ -56,7 +54,6 @@ CASKS=(
   discord
   microsoft-teams
   visual-studio-code
-  adobe-acrobat-reader
   bbedit
   google-drive
   github
@@ -76,7 +73,6 @@ CASKS=(
   drawio
   windows-app
   wireshark
-  xampp
 )
 
 for cask in "${CASKS[@]}"; do
