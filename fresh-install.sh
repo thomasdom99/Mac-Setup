@@ -63,7 +63,6 @@ CASKS=(
   chatgpt
   claude
   drawio
-  filezilla
   obs
   windows-app
   wireshark
