@@ -52,11 +52,6 @@ MAS_APPS=(
   "937984704:Amphetamine"
   "497799835:Xcode"
   "1153157709:Speedtest by Ookla"
-  "462054704:Microsoft Word"
-  "462058435:Microsoft Excel"
-  "462062816:Microsoft PowerPoint"
-  "985367838:Microsoft Outlook"
-  "784801555:Microsoft OneNote"
   "1504481087:Ente Auth"
 )
 
