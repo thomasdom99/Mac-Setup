@@ -4,10 +4,33 @@
 #   Mac Fresh Install Script
 #   Run this after a fresh format to install
 #   all your essential apps via Homebrew.
-#
-#   NOTE: Make sure you are signed into the
-#   App Store before running this script.
 # ===========================================
+
+# Pre-flight checklist
+echo ""
+echo "🍺 Mac Fresh Install Script"
+echo "==========================================="
+echo ""
+echo "⚠️  Before we begin, please confirm the following:"
+echo ""
+echo "  1. You are connected to WiFi"
+echo "  2. You are signed into iCloud (System Settings → Apple ID)"
+echo "  3. You are signed into the App Store"
+echo ""
+read -p "Have you completed all of the above? (y/n): " confirm
+echo ""
+
+if [[ "$confirm" =~ ^[Yy]([Ee][Ss]|[Ee][Pp])?$ ]]; then
+  echo "✅ Great! Starting installation..."
+  echo ""
+else
+  echo "❌ Please complete the checklist above before running this script."
+  echo ""
+  echo "  → Sign into iCloud: System Settings → Apple ID"
+  echo "  → Sign into App Store: Open App Store → Sign In"
+  echo ""
+  exit 1
+fi
 
 FAILED_INSTALLS=()
 
