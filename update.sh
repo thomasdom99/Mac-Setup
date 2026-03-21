@@ -44,6 +44,7 @@ CASKS=(
   obs
   windows-app
   wireshark
+  ente-auth
 )
 
 # App Store apps — format: "APP_ID:App Name"
@@ -51,7 +52,6 @@ MAS_APPS=(
   "937984704:Amphetamine"
   "497799835:Xcode"
   "1153157709:Speedtest by Ookla"
-  "1504481087:Ente Auth"
   "472226235:LanScan"
   "897118787:Shazam"
   "310633997:WhatsApp"
