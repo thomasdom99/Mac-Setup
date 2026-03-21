@@ -144,21 +144,23 @@ fi
 # --- Adobe Acrobat Reader ---
 if [ ! -d "/Applications/Adobe Acrobat Reader DC.app" ]; then
   echo "  🔍 Fetching latest Adobe Acrobat Reader version..."
-  ADOBE_VERSION=$(curl -s "https://ardownload2.adobe.com/pub/adobe/reader/mac/AcrobatDC/" \
-    -H "User-Agent: Mozilla/5.0" | grep -oE 'href="[0-9]{10}/"' | grep -oE '[0-9]{10}' | sort -n | tail -1)
+  ADOBE_VERSION=$(curl -sL "https://ardownload2.adobe.com/pub/adobe/reader/mac/AcrobatDC/" \
+    -H "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" \
+    | grep -oE '[0-9]{10}' | sort -n | tail -1)
   if [ -z "$ADOBE_VERSION" ]; then
-    ADOBE_VERSION=$(curl -sL "https://helpx.adobe.com/acrobat/release-note/acrobat-dc-release-notes.html" \
-      -H "User-Agent: Mozilla/5.0" | grep -oE '[0-9]{2}\.[0-9]{3}\.[0-9]{5}' | head -1 | tr -d '.')
-  fi
-  if [ -n "$ADOBE_VERSION" ]; then
-    ADOBE_URL="https://ardownload2.adobe.com/pub/adobe/reader/mac/AcrobatDC/${ADOBE_VERSION}/AcroRdrDC_${ADOBE_VERSION}_MUI.pkg"
+    ADOBE_VERSION="2500121288"
+    echo "  📌 Using fallback version: $ADOBE_VERSION"
+  else
     echo "  📌 Latest version: $ADOBE_VERSION"
-    curl -L "$ADOBE_URL" -o /tmp/AdobeReader.pkg --progress-bar
-    sudo installer -pkg /tmp/AdobeReader.pkg -target / -quiet
-    rm -f /tmp/AdobeReader.pkg
+  fi
+  ADOBE_URL="https://ardownload2.adobe.com/pub/adobe/reader/mac/AcrobatDC/${ADOBE_VERSION}/AcroRdrDC_${ADOBE_VERSION}_MUI.pkg"
+  curl -L "$ADOBE_URL" -o /tmp/AdobeReader.pkg --progress-bar
+  sudo installer -pkg /tmp/AdobeReader.pkg -target / -quiet
+  rm -f /tmp/AdobeReader.pkg
+  if [ -d "/Applications/Adobe Acrobat Reader DC.app" ]; then
     echo "  ✅ Adobe Acrobat Reader installed."
   else
-    echo "  ⚠️  Could not determine latest Adobe Acrobat Reader version, skipping..."
+    echo "  ⚠️  Failed to install Adobe Acrobat Reader, skipping..."
     FAILED_INSTALLS+=("Adobe Acrobat Reader")
   fi
 else
