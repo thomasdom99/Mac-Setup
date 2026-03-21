@@ -51,11 +51,6 @@ MAS_APPS=(
   "937984704:Amphetamine"
   "497799835:Xcode"
   "1153157709:Speedtest by Ookla"
-  "462054704:Microsoft Word"
-  "462058435:Microsoft Excel"
-  "462062816:Microsoft PowerPoint"
-  "985367838:Microsoft Outlook"
-  "784801555:Microsoft OneNote"
   "1504481087:Ente Auth"
 )
 
@@ -135,3 +130,4 @@ echo "     - FileZilla → https://filezilla-project.org"
 echo "     - Adobe Acrobat Reader → https://get.adobe.com/reader"
 echo "     - XAMPP → https://www.apachefriends.org"
 echo "     - Firefox Developer Edition → https://www.mozilla.org/firefox/developer"
+echo "     - Microsoft 365 (Word/Excel/PowerPoint/Outlook/OneNote) → https://www.microsoft.com/microsoft-365"
