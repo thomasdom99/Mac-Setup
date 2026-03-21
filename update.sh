@@ -122,6 +122,93 @@ echo "🧹 Cleaning up old versions..."
 brew cleanup
 
 echo ""
+echo "🌐 Checking directly downloaded apps..."
+
+ARCH=$(uname -m)
+
+# --- Firefox Developer Edition ---
+if [ ! -d "/Applications/Firefox Developer Edition.app" ]; then
+  echo "  🔍 Fetching latest Firefox Developer Edition URL..."
+  FIREFOX_URL="https://download.mozilla.org/?product=firefox-devedition-latest-ssl&os=osx&lang=en-US"
+  echo "  ⬇️  Downloading Firefox Developer Edition..."
+  curl -L "$FIREFOX_URL" -o /tmp/FirefoxDevEdition.dmg --progress-bar
+  hdiutil attach /tmp/FirefoxDevEdition.dmg -quiet
+  cp -R "/Volumes/Firefox Developer Edition/Firefox Developer Edition.app" /Applications/ 2>/dev/null || true
+  hdiutil detach "/Volumes/Firefox Developer Edition" -quiet 2>/dev/null || true
+  rm -f /tmp/FirefoxDevEdition.dmg
+  echo "  ✅ Firefox Developer Edition installed."
+else
+  echo "  ✅ Firefox Developer Edition already installed, skipping."
+fi
+
+# --- Adobe Acrobat Reader ---
+if [ ! -d "/Applications/Adobe Acrobat Reader DC.app" ]; then
+  echo "  🔍 Fetching latest Adobe Acrobat Reader version..."
+  ADOBE_VERSION=$(curl -s "https://ardownload2.adobe.com/pub/adobe/reader/mac/AcrobatDC/" | grep -oE '[0-9]{10}' | sort -n | tail -1)
+  if [ -n "$ADOBE_VERSION" ]; then
+    ADOBE_URL="https://ardownload2.adobe.com/pub/adobe/reader/mac/AcrobatDC/${ADOBE_VERSION}/AcroRdrDC_${ADOBE_VERSION}_MUI.pkg"
+    echo "  📌 Latest version: $ADOBE_VERSION"
+    curl -L "$ADOBE_URL" -o /tmp/AdobeReader.pkg --progress-bar
+    sudo installer -pkg /tmp/AdobeReader.pkg -target / -quiet
+    rm -f /tmp/AdobeReader.pkg
+    echo "  ✅ Adobe Acrobat Reader installed."
+  else
+    echo "  ⚠️  Could not determine latest Adobe Acrobat Reader version, skipping..."
+    FAILED_INSTALLS+=("Adobe Acrobat Reader")
+  fi
+else
+  echo "  ✅ Adobe Acrobat Reader already installed, skipping."
+fi
+
+# --- FileZilla ---
+if [ ! -d "/Applications/FileZilla.app" ]; then
+  echo "  🔍 Fetching latest FileZilla version..."
+  FILEZILLA_VERSION=$(curl -s "https://filezilla-project.org/versions.php" | grep -oE '"version":"[^"]*"' | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+  if [ -n "$FILEZILLA_VERSION" ]; then
+    if [ "$ARCH" = "arm64" ]; then
+      FILEZILLA_URL="https://dl3.cdn.filezilla-project.org/client/FileZilla_${FILEZILLA_VERSION}_macosx-arm64.app.tar.bz2"
+    else
+      FILEZILLA_URL="https://dl3.cdn.filezilla-project.org/client/FileZilla_${FILEZILLA_VERSION}_macosx-x86_64.app.tar.bz2"
+    fi
+    echo "  📌 Latest version: $FILEZILLA_VERSION"
+    curl -L "$FILEZILLA_URL" -o /tmp/FileZilla.app.tar.bz2 --progress-bar
+    tar -xjf /tmp/FileZilla.app.tar.bz2 -C /Applications/ 2>/dev/null
+    rm -f /tmp/FileZilla.app.tar.bz2
+    echo "  ✅ FileZilla installed."
+  else
+    echo "  ⚠️  Could not determine latest FileZilla version, skipping..."
+    FAILED_INSTALLS+=("FileZilla")
+  fi
+else
+  echo "  ✅ FileZilla already installed, skipping."
+fi
+
+# --- XAMPP ---
+if [ ! -d "/Applications/XAMPP" ]; then
+  echo "  🔍 Fetching latest XAMPP version..."
+  XAMPP_VERSION=$(curl -s "https://api.github.com/repos/ApacheFriends/xampp-build/releases/latest" | grep -oE '"tag_name":"[^"]*"' | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+  if [ -z "$XAMPP_VERSION" ]; then
+    XAMPP_VERSION=$(curl -s "https://www.apachefriends.org/download.html" | grep -oE 'XAMPP [0-9]+\.[0-9]+\.[0-9]+' | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+  fi
+  if [ -n "$XAMPP_VERSION" ]; then
+    XAMPP_MAJOR=$(echo "$XAMPP_VERSION" | cut -d. -f1-2)
+    XAMPP_URL="https://sourceforge.net/projects/xampp/files/XAMPP%20Mac%20OS%20X/${XAMPP_MAJOR}/xampp-osx-${XAMPP_VERSION}-0-installer.dmg"
+    echo "  📌 Latest version: $XAMPP_VERSION"
+    curl -L "$XAMPP_URL" -o /tmp/XAMPP.dmg --progress-bar
+    sudo hdiutil attach /tmp/XAMPP.dmg -quiet
+    sudo /Volumes/XAMPP/xampp-osx-${XAMPP_VERSION}-0-installer.app/Contents/MacOS/xampp-osx-${XAMPP_VERSION}-0-installer --unattendedmodeui none --mode unattended 2>/dev/null || true
+    hdiutil detach /Volumes/XAMPP -quiet 2>/dev/null || true
+    rm -f /tmp/XAMPP.dmg
+    echo "  ✅ XAMPP installed."
+  else
+    echo "  ⚠️  Could not determine latest XAMPP version, skipping..."
+    FAILED_INSTALLS+=("XAMPP")
+  fi
+else
+  echo "  ✅ XAMPP already installed, skipping."
+fi
+
+echo ""
 if [ ${#FAILED_INSTALLS[@]} -eq 0 ]; then
   echo "✅ Everything is up to date and nothing is missing!"
 else
