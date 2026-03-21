@@ -202,26 +202,6 @@ else
   echo "  ✅ Firefox Developer Edition already installed, skipping."
 fi
 
-# --- Adobe Acrobat Reader ---
-# Try to fetch latest version dynamically, fallback to known working version
-if [ ! -d "/Applications/Adobe Acrobat Reader DC.app" ]; then
-  echo "  🔍 Fetching latest Adobe Acrobat Reader version..."
-  ADOBE_VERSION=$(curl -sL "https://ardownload2.adobe.com/pub/adobe/reader/mac/AcrobatDC/" \
-    -H "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" \
-    | grep -oE '[0-9]{10}' | sort -n | tail -1)
-  # Fallback to known latest version if scraping fails
-  if [ -z "$ADOBE_VERSION" ]; then
-    ADOBE_VERSION="2500121288"
-    echo "  📌 Using fallback version: $ADOBE_VERSION"
-  else
-    echo "  📌 Latest version: $ADOBE_VERSION"
-  fi
-  ADOBE_URL="https://ardownload2.adobe.com/pub/adobe/reader/mac/AcrobatDC/${ADOBE_VERSION}/AcroRdrDC_${ADOBE_VERSION}_MUI.pkg"
-  install_pkg "Adobe Acrobat Reader" "$ADOBE_URL" "Adobe Acrobat Reader DC.app"
-else
-  echo "  ✅ Adobe Acrobat Reader already installed, skipping."
-fi
-
 # --- FileZilla ---
 # Dynamically fetch latest version from FileZilla's JSON version API
 if [ ! -d "/Applications/FileZilla.app" ]; then
@@ -252,36 +232,6 @@ else
   echo "  ✅ FileZilla already installed, skipping."
 fi
 
-# --- XAMPP ---
-# Query SourceForge API for latest Mac version
-if [ ! -d "/Applications/XAMPP" ]; then
-  echo "  🔍 Fetching latest XAMPP version..."
-  XAMPP_VERSION=$(curl -s "https://sourceforge.net/projects/xampp/files/XAMPP%20Mac%20OS%20X/" \
-    -H "User-Agent: Mozilla/5.0" | grep -oE '"[0-9]+\.[0-9]+\.[0-9]+"' | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | sort -V | tail -1)
-  # Fallback to known stable version
-  if [ -z "$XAMPP_VERSION" ]; then
-    XAMPP_VERSION="8.2.12"
-  fi
-  XAMPP_MAJOR=$(echo "$XAMPP_VERSION" | cut -d. -f1-2)
-  XAMPP_URL="https://sourceforge.net/projects/xampp/files/XAMPP%20Mac%20OS%20X/${XAMPP_MAJOR}/xampp-osx-${XAMPP_VERSION}-0-installer.dmg/download"
-  echo "  📌 Latest version: $XAMPP_VERSION"
-  echo "  ⬇️  Downloading XAMPP..."
-  curl -L "$XAMPP_URL" -o /tmp/XAMPP.dmg --progress-bar
-  echo "  📦 Installing XAMPP..."
-  sudo hdiutil attach /tmp/XAMPP.dmg -quiet
-  sudo /Volumes/XAMPP/xampp-osx-${XAMPP_VERSION}-0-installer.app/Contents/MacOS/xampp-osx-${XAMPP_VERSION}-0-installer --unattendedmodeui none --mode unattended 2>/dev/null || true
-  hdiutil detach /Volumes/XAMPP -quiet 2>/dev/null || true
-  rm -f /tmp/XAMPP.dmg
-  if [ -d "/Applications/XAMPP" ]; then
-    echo "  ✅ XAMPP installed successfully."
-  else
-    echo "  ⚠️  Failed to install XAMPP, skipping..."
-    FAILED_INSTALLS+=("XAMPP")
-  fi
-else
-  echo "  ✅ XAMPP already installed, skipping."
-fi
-
 echo ""
 if [ ${#FAILED_INSTALLS[@]} -eq 0 ]; then
   echo "✅ All done! Your Mac is set up and ready to go."
@@ -298,3 +248,5 @@ echo ""
 echo "  🌐 Website:"
 echo "     - Cisco Packet Tracer → https://www.netacad.com"
 echo "     - Microsoft 365 (Word/Excel/PowerPoint/Outlook/OneNote) → https://www.microsoft.com/microsoft-365"
+echo "     - Adobe Acrobat Reader → https://get.adobe.com/reader"
+echo "     - XAMPP → https://www.apachefriends.org"
