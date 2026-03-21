@@ -203,25 +203,21 @@ else
 fi
 
 # --- Adobe Acrobat Reader ---
-# Use Adobe's official redirect URL which always serves the latest version
+# Try to fetch latest version dynamically, fallback to known working version
 if [ ! -d "/Applications/Adobe Acrobat Reader DC.app" ]; then
   echo "  🔍 Fetching latest Adobe Acrobat Reader version..."
-  # Query Adobe's update check API for the latest version number
-  ADOBE_VERSION=$(curl -s "https://ardownload2.adobe.com/pub/adobe/reader/mac/AcrobatDC/" \
-    -H "User-Agent: Mozilla/5.0" | grep -oE 'href="[0-9]{10}/"' | grep -oE '[0-9]{10}' | sort -n | tail -1)
-  # Fallback — use known latest if scraping fails
+  ADOBE_VERSION=$(curl -sL "https://ardownload2.adobe.com/pub/adobe/reader/mac/AcrobatDC/" \
+    -H "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" \
+    | grep -oE '[0-9]{10}' | sort -n | tail -1)
+  # Fallback to known latest version if scraping fails
   if [ -z "$ADOBE_VERSION" ]; then
-    ADOBE_VERSION=$(curl -sL "https://helpx.adobe.com/acrobat/release-note/acrobat-dc-release-notes.html" \
-      -H "User-Agent: Mozilla/5.0" | grep -oE '[0-9]{2}\.[0-9]{3}\.[0-9]{5}' | head -1 | tr -d '.')
-  fi
-  if [ -n "$ADOBE_VERSION" ]; then
-    ADOBE_URL="https://ardownload2.adobe.com/pub/adobe/reader/mac/AcrobatDC/${ADOBE_VERSION}/AcroRdrDC_${ADOBE_VERSION}_MUI.pkg"
-    echo "  📌 Latest version: $ADOBE_VERSION"
-    install_pkg "Adobe Acrobat Reader" "$ADOBE_URL" "Adobe Acrobat Reader DC.app"
+    ADOBE_VERSION="2500121288"
+    echo "  📌 Using fallback version: $ADOBE_VERSION"
   else
-    echo "  ⚠️  Could not determine latest Adobe Acrobat Reader version, skipping..."
-    FAILED_INSTALLS+=("Adobe Acrobat Reader")
+    echo "  📌 Latest version: $ADOBE_VERSION"
   fi
+  ADOBE_URL="https://ardownload2.adobe.com/pub/adobe/reader/mac/AcrobatDC/${ADOBE_VERSION}/AcroRdrDC_${ADOBE_VERSION}_MUI.pkg"
+  install_pkg "Adobe Acrobat Reader" "$ADOBE_URL" "Adobe Acrobat Reader DC.app"
 else
   echo "  ✅ Adobe Acrobat Reader already installed, skipping."
 fi
