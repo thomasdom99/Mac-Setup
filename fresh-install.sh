@@ -182,7 +182,7 @@ install_pkg() {
   echo "  ⬇️  Downloading $name..."
   curl -L "$url" -o /tmp/${name// /_}.pkg --progress-bar
   echo "  📦 Installing $name..."
-  sudo installer -pkg /tmp/${name// /_}.pkg -target / -quiet
+  sudo installer -pkg /tmp/${name// /_}.pkg -target /
   rm -f /tmp/${name// /_}.pkg
   if [ -d "/Applications/$app_name" ]; then
     echo "  ✅ $name installed successfully."
