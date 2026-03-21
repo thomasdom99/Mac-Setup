@@ -155,7 +155,7 @@ if [ ! -d "/Applications/Adobe Acrobat Reader DC.app" ]; then
   fi
   ADOBE_URL="https://ardownload2.adobe.com/pub/adobe/reader/mac/AcrobatDC/${ADOBE_VERSION}/AcroRdrDC_${ADOBE_VERSION}_MUI.pkg"
   curl -L "$ADOBE_URL" -o /tmp/AdobeReader.pkg --progress-bar
-  sudo installer -pkg /tmp/AdobeReader.pkg -target / -quiet
+  sudo installer -pkg /tmp/AdobeReader.pkg -target /
   rm -f /tmp/AdobeReader.pkg
   if [ -d "/Applications/Adobe Acrobat Reader DC.app" ]; then
     echo "  ✅ Adobe Acrobat Reader installed."
