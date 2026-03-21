@@ -141,32 +141,6 @@ else
   echo "  ✅ Firefox Developer Edition already installed, skipping."
 fi
 
-# --- Adobe Acrobat Reader ---
-if [ ! -d "/Applications/Adobe Acrobat Reader DC.app" ]; then
-  echo "  🔍 Fetching latest Adobe Acrobat Reader version..."
-  ADOBE_VERSION=$(curl -sL "https://ardownload2.adobe.com/pub/adobe/reader/mac/AcrobatDC/" \
-    -H "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" \
-    | grep -oE '[0-9]{10}' | sort -n | tail -1)
-  if [ -z "$ADOBE_VERSION" ]; then
-    ADOBE_VERSION="2500121288"
-    echo "  📌 Using fallback version: $ADOBE_VERSION"
-  else
-    echo "  📌 Latest version: $ADOBE_VERSION"
-  fi
-  ADOBE_URL="https://ardownload2.adobe.com/pub/adobe/reader/mac/AcrobatDC/${ADOBE_VERSION}/AcroRdrDC_${ADOBE_VERSION}_MUI.pkg"
-  curl -L "$ADOBE_URL" -o /tmp/AdobeReader.pkg --progress-bar
-  sudo installer -pkg /tmp/AdobeReader.pkg -target /
-  rm -f /tmp/AdobeReader.pkg
-  if [ -d "/Applications/Adobe Acrobat Reader DC.app" ]; then
-    echo "  ✅ Adobe Acrobat Reader installed."
-  else
-    echo "  ⚠️  Failed to install Adobe Acrobat Reader, skipping..."
-    FAILED_INSTALLS+=("Adobe Acrobat Reader")
-  fi
-else
-  echo "  ✅ Adobe Acrobat Reader already installed, skipping."
-fi
-
 # --- FileZilla ---
 if [ ! -d "/Applications/FileZilla.app" ]; then
   echo "  🔍 Fetching latest FileZilla version..."
@@ -188,27 +162,6 @@ if [ ! -d "/Applications/FileZilla.app" ]; then
   fi
 else
   echo "  ✅ FileZilla already installed, skipping."
-fi
-
-# --- XAMPP ---
-if [ ! -d "/Applications/XAMPP" ]; then
-  echo "  🔍 Fetching latest XAMPP version..."
-  XAMPP_VERSION=$(curl -s "https://sourceforge.net/projects/xampp/files/XAMPP%20Mac%20OS%20X/" \
-    -H "User-Agent: Mozilla/5.0" | grep -oE '"[0-9]+\.[0-9]+\.[0-9]+"' | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | sort -V | tail -1)
-  if [ -z "$XAMPP_VERSION" ]; then
-    XAMPP_VERSION="8.2.12"
-  fi
-  XAMPP_MAJOR=$(echo "$XAMPP_VERSION" | cut -d. -f1-2)
-  XAMPP_URL="https://sourceforge.net/projects/xampp/files/XAMPP%20Mac%20OS%20X/${XAMPP_MAJOR}/xampp-osx-${XAMPP_VERSION}-0-installer.dmg/download"
-  echo "  📌 Latest version: $XAMPP_VERSION"
-  curl -L "$XAMPP_URL" -o /tmp/XAMPP.dmg --progress-bar
-  sudo hdiutil attach /tmp/XAMPP.dmg -quiet
-  sudo /Volumes/XAMPP/xampp-osx-${XAMPP_VERSION}-0-installer.app/Contents/MacOS/xampp-osx-${XAMPP_VERSION}-0-installer --unattendedmodeui none --mode unattended 2>/dev/null || true
-  hdiutil detach /Volumes/XAMPP -quiet 2>/dev/null || true
-  rm -f /tmp/XAMPP.dmg
-  echo "  ✅ XAMPP installed."
-else
-  echo "  ✅ XAMPP already installed, skipping."
 fi
 
 echo ""
