@@ -138,6 +138,152 @@ echo "🧹 Cleaning up..."
 brew cleanup
 
 echo ""
+echo "🌐 Installing apps via direct download..."
+
+# Detect architecture
+ARCH=$(uname -m)
+
+# Helper — install a DMG from a URL
+install_dmg() {
+  local name=$1
+  local url=$2
+  local app_name=$3
+  if [ -d "/Applications/$app_name" ]; then
+    echo "  ✅ $name already installed, skipping."
+    return
+  fi
+  echo "  ⬇️  Downloading $name..."
+  curl -L "$url" -o /tmp/${name// /_}.dmg --progress-bar
+  echo "  📦 Installing $name..."
+  hdiutil attach /tmp/${name// /_}.dmg -quiet
+  local volume=$(ls /Volumes | grep -i "${name%% *}" | head -1)
+  if [ -n "$volume" ]; then
+    cp -R "/Volumes/$volume/$app_name" /Applications/ 2>/dev/null || true
+    hdiutil detach "/Volumes/$volume" -quiet 2>/dev/null || true
+  fi
+  rm -f /tmp/${name// /_}.dmg
+  if [ -d "/Applications/$app_name" ]; then
+    echo "  ✅ $name installed successfully."
+  else
+    echo "  ⚠️  Failed to install $name, skipping..."
+    FAILED_INSTALLS+=("$name")
+  fi
+}
+
+# Helper — install a PKG from a URL
+install_pkg() {
+  local name=$1
+  local url=$2
+  local app_name=$3
+  if [ -d "/Applications/$app_name" ]; then
+    echo "  ✅ $name already installed, skipping."
+    return
+  fi
+  echo "  ⬇️  Downloading $name..."
+  curl -L "$url" -o /tmp/${name// /_}.pkg --progress-bar
+  echo "  📦 Installing $name..."
+  sudo installer -pkg /tmp/${name// /_}.pkg -target / -quiet
+  rm -f /tmp/${name// /_}.pkg
+  if [ -d "/Applications/$app_name" ]; then
+    echo "  ✅ $name installed successfully."
+  else
+    echo "  ⚠️  Failed to install $name, skipping..."
+    FAILED_INSTALLS+=("$name")
+  fi
+}
+
+# --- Firefox Developer Edition ---
+# Mozilla provides a permanent latest redirect URL — always points to newest version
+if [ ! -d "/Applications/Firefox Developer Edition.app" ]; then
+  echo "  🔍 Fetching latest Firefox Developer Edition URL..."
+  FIREFOX_URL="https://download.mozilla.org/?product=firefox-devedition-latest-ssl&os=osx&lang=en-US"
+  install_dmg "Firefox Developer Edition" "$FIREFOX_URL" "Firefox Developer Edition.app"
+else
+  echo "  ✅ Firefox Developer Edition already installed, skipping."
+fi
+
+# --- Adobe Acrobat Reader ---
+# Dynamically fetch latest version number from Adobe's FTP index
+if [ ! -d "/Applications/Adobe Acrobat Reader DC.app" ]; then
+  echo "  🔍 Fetching latest Adobe Acrobat Reader version..."
+  ADOBE_VERSION=$(curl -s "https://ardownload2.adobe.com/pub/adobe/reader/mac/AcrobatDC/" | grep -oE '[0-9]{10}' | sort -n | tail -1)
+  if [ -n "$ADOBE_VERSION" ]; then
+    ADOBE_URL="https://ardownload2.adobe.com/pub/adobe/reader/mac/AcrobatDC/${ADOBE_VERSION}/AcroRdrDC_${ADOBE_VERSION}_MUI.pkg"
+    echo "  📌 Latest version: $ADOBE_VERSION"
+    install_pkg "Adobe Acrobat Reader" "$ADOBE_URL" "Adobe Acrobat Reader DC.app"
+  else
+    echo "  ⚠️  Could not determine latest Adobe Acrobat Reader version, skipping..."
+    FAILED_INSTALLS+=("Adobe Acrobat Reader")
+  fi
+else
+  echo "  ✅ Adobe Acrobat Reader already installed, skipping."
+fi
+
+# --- FileZilla ---
+# Dynamically fetch latest version from FileZilla's JSON version API
+if [ ! -d "/Applications/FileZilla.app" ]; then
+  echo "  🔍 Fetching latest FileZilla version..."
+  FILEZILLA_VERSION=$(curl -s "https://filezilla-project.org/versions.php" | grep -oE '"version":"[^"]*"' | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+  if [ -n "$FILEZILLA_VERSION" ]; then
+    if [ "$ARCH" = "arm64" ]; then
+      FILEZILLA_URL="https://dl3.cdn.filezilla-project.org/client/FileZilla_${FILEZILLA_VERSION}_macosx-arm64.app.tar.bz2"
+    else
+      FILEZILLA_URL="https://dl3.cdn.filezilla-project.org/client/FileZilla_${FILEZILLA_VERSION}_macosx-x86_64.app.tar.bz2"
+    fi
+    echo "  📌 Latest version: $FILEZILLA_VERSION"
+    echo "  ⬇️  Downloading FileZilla..."
+    curl -L "$FILEZILLA_URL" -o /tmp/FileZilla.app.tar.bz2 --progress-bar
+    tar -xjf /tmp/FileZilla.app.tar.bz2 -C /Applications/ 2>/dev/null
+    rm -f /tmp/FileZilla.app.tar.bz2
+    if [ -d "/Applications/FileZilla.app" ]; then
+      echo "  ✅ FileZilla installed successfully."
+    else
+      echo "  ⚠️  Failed to install FileZilla, skipping..."
+      FAILED_INSTALLS+=("FileZilla")
+    fi
+  else
+    echo "  ⚠️  Could not determine latest FileZilla version, skipping..."
+    FAILED_INSTALLS+=("FileZilla")
+  fi
+else
+  echo "  ✅ FileZilla already installed, skipping."
+fi
+
+# --- XAMPP ---
+# Dynamically fetch latest version from ApacheFriends GitHub releases API
+if [ ! -d "/Applications/XAMPP" ]; then
+  echo "  🔍 Fetching latest XAMPP version..."
+  XAMPP_VERSION=$(curl -s "https://api.github.com/repos/ApacheFriends/xampp-build/releases/latest" | grep -oE '"tag_name":"[^"]*"' | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+  if [ -z "$XAMPP_VERSION" ]; then
+    # Fallback — scrape ApacheFriends directly
+    XAMPP_VERSION=$(curl -s "https://www.apachefriends.org/download.html" | grep -oE 'XAMPP [0-9]+\.[0-9]+\.[0-9]+' | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+  fi
+  if [ -n "$XAMPP_VERSION" ]; then
+    XAMPP_MAJOR=$(echo "$XAMPP_VERSION" | cut -d. -f1-2)
+    XAMPP_URL="https://sourceforge.net/projects/xampp/files/XAMPP%20Mac%20OS%20X/${XAMPP_MAJOR}/xampp-osx-${XAMPP_VERSION}-0-installer.dmg"
+    echo "  📌 Latest version: $XAMPP_VERSION"
+    echo "  ⬇️  Downloading XAMPP..."
+    curl -L "$XAMPP_URL" -o /tmp/XAMPP.dmg --progress-bar
+    echo "  📦 Installing XAMPP..."
+    sudo hdiutil attach /tmp/XAMPP.dmg -quiet
+    sudo /Volumes/XAMPP/xampp-osx-${XAMPP_VERSION}-0-installer.app/Contents/MacOS/xampp-osx-${XAMPP_VERSION}-0-installer --unattendedmodeui none --mode unattended 2>/dev/null || true
+    hdiutil detach /Volumes/XAMPP -quiet 2>/dev/null || true
+    rm -f /tmp/XAMPP.dmg
+    if [ -d "/Applications/XAMPP" ]; then
+      echo "  ✅ XAMPP installed successfully."
+    else
+      echo "  ⚠️  Failed to install XAMPP, skipping..."
+      FAILED_INSTALLS+=("XAMPP")
+    fi
+  else
+    echo "  ⚠️  Could not determine latest XAMPP version, skipping..."
+    FAILED_INSTALLS+=("XAMPP")
+  fi
+else
+  echo "  ✅ XAMPP already installed, skipping."
+fi
+
+echo ""
 if [ ${#FAILED_INSTALLS[@]} -eq 0 ]; then
   echo "✅ All done! Your Mac is set up and ready to go."
 else
@@ -152,8 +298,4 @@ echo "⚠️  The following apps need to be installed manually:"
 echo ""
 echo "  🌐 Website:"
 echo "     - Cisco Packet Tracer → https://www.netacad.com"
-echo "     - FileZilla → https://filezilla-project.org"
-echo "     - Adobe Acrobat Reader → https://get.adobe.com/reader"
-echo "     - XAMPP → https://www.apachefriends.org"
-echo "     - Firefox Developer Edition → https://www.mozilla.org/firefox/developer"
 echo "     - Microsoft 365 (Word/Excel/PowerPoint/Outlook/OneNote) → https://www.microsoft.com/microsoft-365"
