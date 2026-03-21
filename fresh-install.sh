@@ -28,7 +28,6 @@ CASKS=(
   google-drive
   github
   utm
-  rectangle
   handbrake
   vlc
   stats
@@ -52,6 +51,10 @@ MAS_APPS=(
   "497799835:Xcode"
   "1153157709:Speedtest by Ookla"
   "1504481087:Ente Auth"
+  "472226235:LanScan"
+  "897118787:Shazam"
+  "310633997:WhatsApp"
+  "441258766:Magnet"
 )
 
 echo "🍺 Checking for Homebrew..."
