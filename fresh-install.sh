@@ -71,6 +71,7 @@ MAS_APPS=(
   "1153157709:Speedtest by Ookla"
   "472226235:LanScan"
   "897118787:Shazam"
+  "310633997:WhatsApp"
   "441258766:Magnet"
 )
 
@@ -130,61 +131,6 @@ done
 echo ""
 echo "🧹 Cleaning up..."
 brew cleanup
-
-echo ""
-echo "🌐 Installing apps via direct download..."
-
-# Detect architecture
-ARCH=$(uname -m)
-
-# Helper — install a DMG from a URL
-install_dmg() {
-  local name=$1
-  local url=$2
-  local app_name=$3
-  if [ -d "/Applications/$app_name" ]; then
-    echo "  ✅ $name already installed, skipping."
-    return
-  fi
-  echo "  ⬇️  Downloading $name..."
-  curl -L "$url" -o /tmp/${name// /_}.dmg --progress-bar
-  echo "  📦 Installing $name..."
-  hdiutil attach /tmp/${name// /_}.dmg -quiet
-  local volume=$(ls /Volumes | grep -i "${name%% *}" | head -1)
-  if [ -n "$volume" ]; then
-    cp -R "/Volumes/$volume/$app_name" /Applications/ 2>/dev/null || true
-    hdiutil detach "/Volumes/$volume" -quiet 2>/dev/null || true
-  fi
-  rm -f /tmp/${name// /_}.dmg
-  if [ -d "/Applications/$app_name" ]; then
-    echo "  ✅ $name installed successfully."
-  else
-    echo "  ⚠️  Failed to install $name, skipping..."
-    FAILED_INSTALLS+=("$name")
-  fi
-}
-
-# Helper — install a PKG from a URL
-install_pkg() {
-  local name=$1
-  local url=$2
-  local app_name=$3
-  if [ -d "/Applications/$app_name" ]; then
-    echo "  ✅ $name already installed, skipping."
-    return
-  fi
-  echo "  ⬇️  Downloading $name..."
-  curl -L "$url" -o /tmp/${name// /_}.pkg --progress-bar
-  echo "  📦 Installing $name..."
-  sudo installer -pkg /tmp/${name// /_}.pkg -target /
-  rm -f /tmp/${name// /_}.pkg
-  if [ -d "/Applications/$app_name" ]; then
-    echo "  ✅ $name installed successfully."
-  else
-    echo "  ⚠️  Failed to install $name, skipping..."
-    FAILED_INSTALLS+=("$name")
-  fi
-}
 
 echo ""
 if [ ${#FAILED_INSTALLS[@]} -eq 0 ]; then
