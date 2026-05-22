@@ -49,6 +49,7 @@ MAS_APPS=(
   "1153157709:Speedtest by Ookla"
   "472226235:LanScan"
   "897118787:Shazam"
+  "310633997:WhatsApp"
   "441258766:Magnet"
 )
 
@@ -105,7 +106,7 @@ brew upgrade
 
 echo ""
 echo "⬆️  Upgrading casks..."
-brew upgrade --cask --greedy $(brew list --cask | grep -v -E "^(alt-tab|firefox@developer-edition)$" | tr '\n' ' ')
+brew upgrade --cask --greedy $(brew list --cask | tr '\n' ' ')
 
 echo ""
 echo "⬆️  Upgrading App Store apps..."
@@ -114,11 +115,6 @@ mas upgrade
 echo ""
 echo "🧹 Cleaning up old versions..."
 brew cleanup
-
-echo ""
-echo "🌐 Checking directly downloaded apps..."
-
-ARCH=$(uname -m)
 
 echo ""
 if [ ${#FAILED_INSTALLS[@]} -eq 0 ]; then
