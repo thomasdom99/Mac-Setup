@@ -62,6 +62,8 @@ CASKS=(
   obs
   windows-app
   ente-auth
+  1password
+  sublime-text
 )
 
 # App Store apps — format: "APP_ID:App Name"
@@ -71,7 +73,6 @@ MAS_APPS=(
   "1153157709:Speedtest by Ookla"
   "472226235:LanScan"
   "897118787:Shazam"
-  "310633997:WhatsApp"
   "441258766:Magnet"
 )
 
