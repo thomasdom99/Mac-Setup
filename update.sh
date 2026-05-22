@@ -107,7 +107,11 @@ brew upgrade
 
 echo ""
 echo "⬆️  Upgrading casks..."
-brew upgrade --cask --greedy $(brew list --cask | tr '\n' ' ')
+for cask in "${CASKS[@]}"; do
+  if brew list --cask | grep -q "^${cask}\$"; then
+    brew upgrade --cask "$cask" 2>/dev/null || true
+  fi
+done
 
 echo ""
 echo "⬆️  Upgrading App Store apps..."
