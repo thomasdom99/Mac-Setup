@@ -2,12 +2,6 @@
 
 # ===========================================
 #   Mac Update Script
-#   Run this every now and then to keep
-#   all your apps up to date via Homebrew.
-#   Also installs any missing apps.
-#
-#   NOTE: Make sure you are signed into the
-#   App Store before running this script.
 # ===========================================
 
 FAILED_INSTALLS=()
@@ -20,7 +14,6 @@ FORMULAE=(
 
 CASKS=(
   1password
-  adobe-acrobat-reader
   bbedit
   brave-browser
   chatgpt
@@ -35,12 +28,9 @@ CASKS=(
   handbrake
   microsoft-teams
   notion
-  obs
   postman
   spotify
-  stats
   tailscale
-  the-unarchiver
   visual-studio-code
   vlc
   windows-app
@@ -48,7 +38,6 @@ CASKS=(
   zoom
 )
 
-# App Store apps — format: "APP_ID:App Name"
 MAS_APPS=(
   "937984704:Amphetamine"
   "497799835:Xcode"
@@ -81,7 +70,7 @@ for cask in "${CASKS[@]}"; do
     echo "  ✅ $cask Installed already, skipping."
   else
     echo "  ⬇️  Installing missing app: $cask..."
-    if ! brew install --cask "$cask"; then
+    if ! brew install --cask --force "$cask"; then
       echo "  ⚠️  Failed to install $cask, skipping..."
       FAILED_INSTALLS+=("$cask")
     fi
