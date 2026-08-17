@@ -2,6 +2,12 @@
 
 # ===========================================
 #   Mac Update Script
+#   Run this every now and then to keep
+#   all your apps up to date via Homebrew.
+#   Also installs any missing apps.
+#
+#   NOTE: Make sure you are signed into the
+#   App Store before running this script.
 # ===========================================
 
 FAILED_INSTALLS=()
@@ -13,37 +19,37 @@ FORMULAE=(
 )
 
 CASKS=(
-  1password
+  spotify
+  google-chrome
+  discord
+  microsoft-teams
+  visual-studio-code
   bbedit
-  brave-browser
+  google-drive
+  github
+  handbrake
+  vlc
+  docker
+  notion
   chatgpt
   claude
-  discord
-  docker
   drawio
-  ente-auth
-  github
-  google-chrome
-  google-drive
-  handbrake
-  microsoft-teams
-  notion
-  postman
-  spotify
-  tailscale
-  visual-studio-code
-  vlc
   windows-app
+  ente-auth
+  1password
+  tailscale
+  brave-browser
+  postman
   wireshark
   zoom
 )
 
+# App Store apps — format: "APP_ID:App Name"
 MAS_APPS=(
   "937984704:Amphetamine"
   "497799835:Xcode"
   "472226235:LanScan"
   "441258766:Magnet"
-  "1200234471:Wake Me Up"
 )
 
 echo "🍺 Updating Homebrew..."
@@ -53,7 +59,7 @@ echo ""
 echo "📦 Checking formulae (CLI tools)..."
 for formula in "${FORMULAE[@]}"; do
   if brew list --formula | grep -q "^${formula}\$"; then
-    echo "  ✅ $formula Installed already, skipping."
+    echo "  ✅ $formula already installed, skipping."
   else
     echo "  ⬇️  Installing missing formula: $formula..."
     if ! brew install "$formula"; then
@@ -67,10 +73,10 @@ echo ""
 echo "🖥️  Checking casks (GUI apps)..."
 for cask in "${CASKS[@]}"; do
   if brew list --cask | grep -q "^${cask}\$"; then
-    echo "  ✅ $cask Installed already, skipping."
+    echo "  ✅ $cask already installed, skipping."
   else
     echo "  ⬇️  Installing missing app: $cask..."
-    if ! brew install --cask --force "$cask"; then
+    if ! brew install --cask "$cask"; then
       echo "  ⚠️  Failed to install $cask, skipping..."
       FAILED_INSTALLS+=("$cask")
     fi
@@ -83,7 +89,7 @@ for entry in "${MAS_APPS[@]}"; do
   id="${entry%%:*}"
   name="${entry##*:}"
   if mas list | grep -q "^${id}"; then
-    echo "  ✅ $name Installed already, skipping."
+    echo "  ✅ $name already installed, skipping."
   else
     echo "  ⬇️  Installing missing app: $name..."
     if ! mas install "$id"; then
@@ -95,6 +101,15 @@ done
 
 echo ""
 echo "⬆️  Upgrading formulae and casks..."
+# A bare 'brew upgrade' already upgrades all outdated formulae AND casks in
+# one pass. It correctly skips casks marked auto_updates:true (Chrome, Discord,
+# Notion, Spotify, VS Code, Docker, Teams, Steam, OBS, ChatGPT, Claude, etc.)
+# since those manage their own updates. Looping back and calling
+# `brew upgrade --cask <token>` on each one individually bypasses that skip
+# logic and forces a full reinstall even when the app is already current —
+# that's what was making updates look like fresh installs. If you ever want
+# Homebrew to force-check those self-updating apps too, run:
+#   brew upgrade --greedy
 brew upgrade
 
 echo ""
