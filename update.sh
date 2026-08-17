@@ -19,29 +19,34 @@ FORMULAE=(
 )
 
 CASKS=(
-  spotify
-  google-chrome
-  discord
-  microsoft-teams
-  visual-studio-code
+  1password
+  adobe-acrobat-reader
   bbedit
-  google-drive
-  github
-  handbrake
-  vlc
-  stats
-  the-unarchiver
-  docker
-  notion
-  steam
+  brave-browser
   chatgpt
   claude
+  discord
+  docker
   drawio
-  obs
-  windows-app
   ente-auth
-  1password
-  sublime-text
+  github
+  google-chrome
+  google-drive
+  handbrake
+  microsoft-teams
+  notion
+  obs
+  postman
+  spotify
+  stats
+  tailscale
+  the-unarchiver
+  visual-studio-code
+  vlc
+  whatsapp
+  windows-app
+  wireshark
+  zoom
 )
 
 # App Store apps — format: "APP_ID:App Name"
@@ -103,15 +108,6 @@ done
 
 echo ""
 echo "⬆️  Upgrading formulae and casks..."
-# A bare 'brew upgrade' already upgrades all outdated formulae AND casks in
-# one pass. It correctly skips casks marked auto_updates:true (Chrome, Discord,
-# Notion, Spotify, VS Code, Docker, Teams, Steam, OBS, ChatGPT, Claude, etc.)
-# since those manage their own updates. Looping back and calling
-# `brew upgrade --cask <token>` on each one individually bypasses that skip
-# logic and forces a full reinstall even when the app is already current —
-# that's what was making updates look like fresh installs. If you ever want
-# Homebrew to force-check those self-updating apps too, run:
-#   brew upgrade --greedy
 brew upgrade
 
 echo ""
