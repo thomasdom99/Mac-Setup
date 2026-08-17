@@ -105,7 +105,7 @@ echo ""
 echo "📦 Installing formulae (CLI tools)..."
 for formula in "${FORMULAE[@]}"; do
   if brew list --formula | grep -q "^${formula}\$"; then
-    echo "  ✅ $formula already installed, skipping."
+    echo "  ✅ $formula Installed already, skipping."
   else
     echo "  ⬇️  Installing $formula..."
     if ! brew install "$formula"; then
@@ -119,11 +119,11 @@ echo ""
 echo "🖥️  Installing casks (GUI apps)..."
 for cask in "${CASKS[@]}"; do
   # Get expected App name from cask metadata or default to cask token
-  app_name=$(brew info --cask "$cask" 2>/dev/null | grep -E "\.app" | head -n 1 | sed -E 's/.*: (.*)\.app.*/\1/' | xargs)
+  app_name=$(brew info --cask "$cask" 2>/devnull | grep -E "\.app" | head -n 1 | sed -E 's/.*: (.*)\.app.*/\1/' | xargs)
   [ -z "$app_name" ] && app_name="$cask"
 
   if brew list --cask | grep -q "^${cask}\$" || is_app_installed "$app_name"; then
-    echo "  ✅ $cask already exists in Applications, skipping."
+    echo "  ✅ $cask Installed already, skipping."
   else
     echo "  ⬇️  Installing $cask..."
     if ! brew install --cask "$cask"; then
@@ -139,7 +139,7 @@ for entry in "${MAS_APPS[@]}"; do
   id="${entry%%:*}"
   name="${entry##*:}"
   if mas list | grep -q "^${id}" || is_app_installed "$name"; then
-    echo "  ✅ $name already exists in Applications, skipping."
+    echo "  ✅ $name Installed already, skipping."
   else
     echo "  ⬇️  Installing $name..."
     if ! mas install "$id"; then
