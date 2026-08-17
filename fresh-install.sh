@@ -51,7 +51,7 @@ CASKS=(
   github
   handbrake
   vlc
-  docker
+  docker-desktop
   notion
   chatgpt
   claude
@@ -86,7 +86,7 @@ fi
 echo ""
 echo "📦 Installing formulae (CLI tools)..."
 for formula in "${FORMULAE[@]}"; do
-  if brew list --formula | grep -q "^${formula}\$"; then
+  if brew list --formula "$formula" &>/dev/null; then
     echo "  ✅ $formula already installed, skipping."
   else
     echo "  ⬇️  Installing $formula..."
@@ -100,7 +100,7 @@ done
 echo ""
 echo "🖥️  Installing casks (GUI apps)..."
 for cask in "${CASKS[@]}"; do
-  if brew list --cask | grep -q "^${cask}\$"; then
+  if brew list --cask "$cask" &>/dev/null; then
     echo "  ✅ $cask already installed, skipping."
   else
     echo "  ⬇️  Installing $cask..."
