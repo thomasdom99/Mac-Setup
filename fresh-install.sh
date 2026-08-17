@@ -80,6 +80,18 @@ MAS_APPS=(
   "441258766:Magnet"
 )
 
+# Helper function to check if an app exists in Applications folders
+is_app_installed() {
+  local app_name="$1"
+  if [ -d "/Applications/${app_name}.app" ] || [ -d "$HOME/Applications/${app_name}.app" ]; then
+    return 0
+  fi
+  if mdfind "kMDItemKind == 'Application' && kMDItemDisplayName == '${app_name}'" | grep -q ".app"; then
+    return 0
+  fi
+  return 1
+}
+
 echo "🍺 Checking for Homebrew..."
 if ! command -v brew &>/devnull; then
   echo "Installing Homebrew..."
@@ -106,8 +118,12 @@ done
 echo ""
 echo "🖥️  Installing casks (GUI apps)..."
 for cask in "${CASKS[@]}"; do
-  if brew list --cask | grep -q "^${cask}\$"; then
-    echo "  ✅ $cask already installed, skipping."
+  # Get expected App name from cask metadata or default to cask token
+  app_name=$(brew info --cask "$cask" 2>/dev/null | grep -E "\.app" | head -n 1 | sed -E 's/.*: (.*)\.app.*/\1/' | xargs)
+  [ -z "$app_name" ] && app_name="$cask"
+
+  if brew list --cask | grep -q "^${cask}\$" || is_app_installed "$app_name"; then
+    echo "  ✅ $cask already exists in Applications, skipping."
   else
     echo "  ⬇️  Installing $cask..."
     if ! brew install --cask "$cask"; then
@@ -122,8 +138,8 @@ echo "🛍️  Installing App Store apps..."
 for entry in "${MAS_APPS[@]}"; do
   id="${entry%%:*}"
   name="${entry##*:}"
-  if mas list | grep -q "^${id}"; then
-    echo "  ✅ $name already installed, skipping."
+  if mas list | grep -q "^${id}" || is_app_installed "$name"; then
+    echo "  ✅ $name already exists in Applications, skipping."
   else
     echo "  ⬇️  Installing $name..."
     if ! mas install "$id"; then
