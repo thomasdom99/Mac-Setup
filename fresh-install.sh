@@ -64,7 +64,6 @@ CASKS=(
   the-unarchiver
   visual-studio-code
   vlc
-  whatsapp
   windows-app
   wireshark
   zoom
@@ -74,10 +73,9 @@ CASKS=(
 MAS_APPS=(
   "937984704:Amphetamine"
   "497799835:Xcode"
-  "1153157709:Speedtest by Ookla"
   "472226235:LanScan"
-  "897118787:Shazam"
   "441258766:Magnet"
+  "1200234471:Wake Me Up"
 )
 
 # Helper function to check if an app exists in Applications folders
