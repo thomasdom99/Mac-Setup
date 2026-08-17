@@ -43,7 +43,6 @@ CASKS=(
   the-unarchiver
   visual-studio-code
   vlc
-  whatsapp
   windows-app
   wireshark
   zoom
@@ -53,10 +52,9 @@ CASKS=(
 MAS_APPS=(
   "937984704:Amphetamine"
   "497799835:Xcode"
-  "1153157709:Speedtest by Ookla"
   "472226235:LanScan"
-  "897118787:Shazam"
   "441258766:Magnet"
+  "1200234471:Wake Me Up"
 )
 
 echo "🍺 Updating Homebrew..."
@@ -66,7 +64,7 @@ echo ""
 echo "📦 Checking formulae (CLI tools)..."
 for formula in "${FORMULAE[@]}"; do
   if brew list --formula | grep -q "^${formula}\$"; then
-    echo "  ✅ $formula already installed, skipping."
+    echo "  ✅ $formula Installed already, skipping."
   else
     echo "  ⬇️  Installing missing formula: $formula..."
     if ! brew install "$formula"; then
@@ -80,7 +78,7 @@ echo ""
 echo "🖥️  Checking casks (GUI apps)..."
 for cask in "${CASKS[@]}"; do
   if brew list --cask | grep -q "^${cask}\$"; then
-    echo "  ✅ $cask already installed, skipping."
+    echo "  ✅ $cask Installed already, skipping."
   else
     echo "  ⬇️  Installing missing app: $cask..."
     if ! brew install --cask "$cask"; then
@@ -96,7 +94,7 @@ for entry in "${MAS_APPS[@]}"; do
   id="${entry%%:*}"
   name="${entry##*:}"
   if mas list | grep -q "^${id}"; then
-    echo "  ✅ $name already installed, skipping."
+    echo "  ✅ $name Installed already, skipping."
   else
     echo "  ⬇️  Installing missing app: $name..."
     if ! mas install "$id"; then
