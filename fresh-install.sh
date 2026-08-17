@@ -2,8 +2,6 @@
 
 # ===========================================
 #   Mac Fresh Install Script
-#   Run this after a fresh format to install
-#   all your essential apps via Homebrew.
 # ===========================================
 
 echo ""
@@ -24,10 +22,6 @@ if [[ "$confirm" =~ ^[Yy]([Ee][Ss]|[Ee][Pp])?$ ]]; then
   echo ""
 else
   echo "❌ Please complete the checklist above before running this script."
-  echo ""
-  echo "  → Sign into iCloud: System Settings → Apple ID"
-  echo "  → Sign into App Store: Open App Store → Sign In"
-  echo ""
   exit 1
 fi
 
@@ -41,7 +35,6 @@ FORMULAE=(
 
 CASKS=(
   1password
-  adobe-acrobat-reader
   bbedit
   brave-browser
   chatgpt
@@ -56,12 +49,9 @@ CASKS=(
   handbrake
   microsoft-teams
   notion
-  obs
   postman
   spotify
-  stats
   tailscale
-  the-unarchiver
   visual-studio-code
   vlc
   windows-app
@@ -78,13 +68,37 @@ MAS_APPS=(
   "1200234471:Wake Me Up"
 )
 
-# Helper function to check if an app exists in Applications folders
+# Robust check for GUI applications in /Applications
 is_app_installed() {
-  local app_name="$1"
-  if [ -d "/Applications/${app_name}.app" ] || [ -d "$HOME/Applications/${app_name}.app" ]; then
-    return 0
-  fi
-  if mdfind "kMDItemKind == 'Application' && kMDItemDisplayName == '${app_name}'" | grep -q ".app"; then
+  local target_cask="$1"
+  case "$target_cask" in
+    1password)           app_file="1Password.app" ;;
+    bbedit)              app_file="BBEdit.app" ;;
+    brave-browser)       app_file="Brave Browser.app" ;;
+    chatgpt)             app_file="ChatGPT.app" ;;
+    claude)              app_file="Claude.app" ;;
+    discord)             app_file="Discord.app" ;;
+    docker)              app_file="Docker.app" ;;
+    drawio)              app_file="draw.io.app" ;;
+    ente-auth)           app_file="Ente Auth.app" ;;
+    github)              app_file="GitHub Desktop.app" ;;
+    google-chrome)       app_file="Google Chrome.app" ;;
+    google-drive)        app_file="Google Drive.app" ;;
+    handbrake)           app_file="HandBrake.app" ;;
+    microsoft-teams)     app_file="Microsoft Teams.app" ;;
+    notion)              app_file="Notion.app" ;;
+    postman)             app_file="Postman.app" ;;
+    spotify)             app_file="Spotify.app" ;;
+    tailscale)           app_file="Tailscale.app" ;;
+    visual-studio-code)  app_file="Visual Studio Code.app" ;;
+    vlc)                 app_file="VLC.app" ;;
+    windows-app)         app_file="Windows App.app" ;;
+    wireshark)           app_file="Wireshark.app" ;;
+    zoom)                app_file="zoom.us.app" ;;
+    *)                   app_file="${target_cask}.app" ;;
+  esac
+
+  if [ -d "/Applications/${app_file}" ] || [ -d "$HOME/Applications/${app_file}" ]; then
     return 0
   fi
   return 1
@@ -116,15 +130,11 @@ done
 echo ""
 echo "🖥️  Installing casks (GUI apps)..."
 for cask in "${CASKS[@]}"; do
-  # Get expected App name from cask metadata or default to cask token
-  app_name=$(brew info --cask "$cask" 2>/devnull | grep -E "\.app" | head -n 1 | sed -E 's/.*: (.*)\.app.*/\1/' | xargs)
-  [ -z "$app_name" ] && app_name="$cask"
-
-  if brew list --cask | grep -q "^${cask}\$" || is_app_installed "$app_name"; then
+  if is_app_installed "$cask"; then
     echo "  ✅ $cask Installed already, skipping."
   else
     echo "  ⬇️  Installing $cask..."
-    if ! brew install --cask "$cask"; then
+    if ! brew install --cask --force "$cask"; then
       echo "  ⚠️  Failed to install $cask, skipping..."
       FAILED_INSTALLS+=("$cask")
     fi
@@ -136,7 +146,7 @@ echo "🛍️  Installing App Store apps..."
 for entry in "${MAS_APPS[@]}"; do
   id="${entry%%:*}"
   name="${entry##*:}"
-  if mas list | grep -q "^${id}" || is_app_installed "$name"; then
+  if mas list | grep -q "^${id}" || [ -d "/Applications/${name}.app" ]; then
     echo "  ✅ $name Installed already, skipping."
   else
     echo "  ⬇️  Installing $name..."
@@ -160,3 +170,7 @@ else
     echo "   ❌ $fail"
   done
 fi
+
+echo ""
+echo "⚠️  The following apps need to be installed manually:"
+echo "     - Adobe Acrobat Reader → https://get.adobe.com/reader"
