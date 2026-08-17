@@ -6,7 +6,6 @@
 #   all your essential apps via Homebrew.
 # ===========================================
 
-# Pre-flight checklist
 echo ""
 echo "🍺 Mac Fresh Install Script"
 echo "==========================================="
@@ -41,29 +40,34 @@ FORMULAE=(
 )
 
 CASKS=(
-  spotify
-  google-chrome
-  discord
-  microsoft-teams
-  visual-studio-code
+  1password
+  adobe-acrobat-reader
   bbedit
-  google-drive
-  github
-  handbrake
-  vlc
-  stats
-  the-unarchiver
-  docker
-  notion
-  steam
+  brave-browser
   chatgpt
   claude
+  discord
+  docker
   drawio
-  obs
-  windows-app
   ente-auth
-  1password
-  sublime-text
+  github
+  google-chrome
+  google-drive
+  handbrake
+  microsoft-teams
+  notion
+  obs
+  postman
+  spotify
+  stats
+  tailscale
+  the-unarchiver
+  visual-studio-code
+  vlc
+  whatsapp
+  windows-app
+  wireshark
+  zoom
 )
 
 # App Store apps — format: "APP_ID:App Name"
@@ -77,7 +81,7 @@ MAS_APPS=(
 )
 
 echo "🍺 Checking for Homebrew..."
-if ! command -v brew &>/dev/null; then
+if ! command -v brew &>/devnull; then
   echo "Installing Homebrew..."
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 else
@@ -142,12 +146,3 @@ else
     echo "   ❌ $fail"
   done
 fi
-
-echo ""
-echo "⚠️  The following apps need to be installed manually:"
-echo ""
-echo "  🌐 Website:"
-echo "     - Cisco Packet Tracer → https://www.netacad.com"
-echo "     - Microsoft 365 (Word/Excel/PowerPoint/Outlook/OneNote) → https://www.microsoft.com/microsoft-365"
-echo "     - Adobe Acrobat Reader → https://get.adobe.com/reader"
-echo "     - XAMPP → https://www.apachefriends.org"
